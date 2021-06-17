@@ -35,6 +35,7 @@ class CreatePacientesTable extends Migration
             $table->string('telefono_fijo', 120)->nullable();
             $table->string('telefono_movil', 120)->nullable();
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }
