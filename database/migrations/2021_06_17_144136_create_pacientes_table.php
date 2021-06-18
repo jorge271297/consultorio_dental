@@ -20,7 +20,7 @@ class CreatePacientesTable extends Migration
             $table->string('apellido_paterno', 120);
             $table->string('apellido_materno', 120)->nullable();
 
-            $table->date('fecha_nacimiento', 120)->nullable();
+            $table->date('fecha_nacimiento', 12);
             $table->string('sexo', 1);
             $table->float('peso', 8, 2);
             $table->float('altura', 8, 2);
@@ -32,8 +32,8 @@ class CreatePacientesTable extends Migration
             $table->integer('codigo_postal');
 
             $table->string('email', 120)->nullable();
-            $table->string('telefono_fijo', 120)->nullable();
-            $table->string('telefono_movil', 120)->nullable();
+            $table->string('telefono_fijo', 16)->nullable();
+            $table->string('telefono_movil', 16)->nullable();
 
             $table->softDeletes();
             $table->timestamps();

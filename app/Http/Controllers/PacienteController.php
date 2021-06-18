@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Paciente;
 use App\Utilities\Helper;
-use App\Utilities\UploadedImage;
 use Illuminate\Http\Request;
+use App\Utilities\UploadedImage;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\PacienteRequest;
 
 class PacienteController extends Controller {
     use UploadedImage;
@@ -27,7 +29,7 @@ class PacienteController extends Controller {
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request) {
+    public function store(PacienteRequest $request) {
         try {
             DB::beginTransaction();
             $data = $request->except('alergias');
@@ -57,6 +59,7 @@ class PacienteController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show(Paciente $paciente) {
+        $paciente->edad = Carbon::parse($paciente->fecha_nacimiento)->age;
         $paciente->alergias = $paciente->alergias;
 
         return response()->json($paciente, 200);
@@ -69,7 +72,7 @@ class PacienteController extends Controller {
      * @param  \App\Models\Paciente  $paciente
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Paciente $paciente) {
+    public function update(PacienteRequest $request, Paciente $paciente) {
         try {
             DB::beginTransaction();
             $data = $request->except('alergias');
