@@ -3,18 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paciente;
+use App\Utilities\Helper;
+use App\Utilities\UploadedImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PacienteController extends Controller
-{
+class PacienteController extends Controller {
+    use UploadedImage;
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index() {
         $pacientes = Paciente::paginate(5);
         return response()->json($pacientes, 200);
     }
@@ -25,24 +27,27 @@ class PacienteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        $paciente = null;
+    public function store(Request $request) {
         try {
             DB::beginTransaction();
-                $paciente = Paciente::create($request->except('alergias'));
+            $data = $request->except('alergias');
+            if ($request->exists("foto")) {
+                $this->inputName = "foto";
+                $this->saveAvatarFrom($request);
+                $data["foto"] = $this->filePath;
+            }
 
-                if($request->exists('alergias')) {
-                    $paciente->alergias()->attach($request->alergias);
-                }
+            $paciente = Paciente::create($data);
+
+            if ($request->exists('alergias')) {
+                $paciente->alergias()->attach($request->alergias);
+            }
             DB::commit();
-        }catch(Exception $e) {
+            return Helper::response(201, "Se creó el registro correctamente.");
+        } catch (\Exception $e) {
             DB::rollback();
+            return Helper::response(500, "Ocurrió un error en el servidor, póngase en contacto con el departamento de soporte.");
         }
-
-        $paciente->alergias = $paciente->alergias;
-
-        return response()->json($paciente, 201);
     }
 
     /**
@@ -51,8 +56,7 @@ class PacienteController extends Controller
      * @param  \App\Models\Paciente  $paciente
      * @return \Illuminate\Http\Response
      */
-    public function show(Paciente $paciente)
-    {
+    public function show(Paciente $paciente) {
         $paciente->alergias = $paciente->alergias;
 
         return response()->json($paciente, 200);
@@ -65,20 +69,34 @@ class PacienteController extends Controller
      * @param  \App\Models\Paciente  $paciente
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Paciente $paciente)
-    {
+    public function update(Request $request, Paciente $paciente) {
         try {
             DB::beginTransaction();
-                $paciente->update($request->except('alergias'));
+            $data = $request->except('alergias');
+            if ($request->exists("foto")) {
+                $this->inputName = "foto";
+                if ($paciente->foto != null) {
+                    $this->saveAvatarFrom($request, $paciente->foto);
+                } else {
+                    $this->saveAvatarFrom($request);
+                }
+                $data["foto"] = $this->filePath;
+            }
 
-                if($request->exists('alergias')) {
+            $paciente->update($data);
+
+            if ($request->exists('alergias')) {
+                if (count(array_diff($request->alergias, $this->getPivot($paciente->id))) > 0) {
                     $alergias = $this->getPivot($paciente->id);
                     $paciente->alergias()->detach($alergias);
                     $paciente->alergias()->toggle($request->alergias);
                 }
+            }
             DB::commit();
-        }catch(Exception $e) {
+            return Helper::response(201, "Se actualizo el registro correctamente.");
+        } catch (\Exception $e) {
             DB::rollback();
+            return Helper::response(500, "Ocurrió un error en el servidor, póngase en contacto con el departamento de soporte.");
         }
 
         $paciente->alergias = $paciente->alergias;
@@ -92,22 +110,25 @@ class PacienteController extends Controller
      * @param  \App\Models\Paciente  $paciente
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Paciente $paciente)
-    {
-        $paciente->delete();
-        return response()->json($paciente, 200);
+    public function destroy(Paciente $paciente) {
+        try {
+            $paciente->delete();
+            return Helper::response(201, "Se eliminó el registro correctamente.");
+        } catch (\Exception $e) {
+            return Helper::response(500, "Ocurrió un error en el servidor, póngase en contacto con el departamento de soporte.");
+        }
     }
 
     private function getPivot($paciente_id) {
         $data = [];
 
         $alergias = DB::table('alergias_pacientes')
-        ->select('alergia_id')
-        ->where('paciente_id', '=',  $paciente_id)
-        ->get();
+            ->select('alergia_id')
+            ->where('paciente_id', '=', $paciente_id)
+            ->get();
 
-        if($alergias->count()) {
-            foreach($alergias as $item) {
+        if ($alergias->count()) {
+            foreach ($alergias as $item) {
                 array_push($data, $item->alergia_id);
             }
         }
