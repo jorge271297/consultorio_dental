@@ -101,10 +101,6 @@ class PacienteController extends Controller {
             DB::rollback();
             return Helper::response(500, "Ocurrió un error en el servidor, póngase en contacto con el departamento de soporte.");
         }
-
-        $paciente->alergias = $paciente->alergias;
-
-        return response()->json($paciente, 201);
     }
 
     /**
