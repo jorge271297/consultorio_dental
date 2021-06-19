@@ -15,10 +15,12 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         \App\Models\Paciente::factory(20)->create();
+        \App\Models\Doctor::factory(20)->create();
         $this->call([
             AlergiaSeeder::class,
             EspecialidadSeeder::class,
-            AlergiaPacienteSeeder::class
+            AlergiaPacienteSeeder::class,
+            DoctorEspecialidadSeeder::class
         ]);
     }
 }

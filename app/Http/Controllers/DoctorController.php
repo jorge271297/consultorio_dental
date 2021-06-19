@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use App\Models\Paciente;
+use App\Models\Doctor;
 use App\Utilities\Helper;
 use Illuminate\Http\Request;
 use App\Utilities\UploadedImage;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\PacienteRequest;
+use App\Http\Requests\DoctorRequest;
 
-class PacienteController extends Controller {
+class DoctorController extends Controller {
     use UploadedImage;
 
     /**
@@ -19,8 +19,8 @@ class PacienteController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $pacientes = Paciente::paginate(5);
-        return response()->json($pacientes, 200);
+        $doctores = Doctor::paginate(5);
+        return response()->json($doctores, 200);
     }
 
     /**
@@ -29,20 +29,20 @@ class PacienteController extends Controller {
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(PacienteRequest $request) {
+    public function store(DoctorRequest $request) {
         try {
             DB::beginTransaction();
-            $data = $request->except('alergias');
+            $data = $request->except('especialidades');
             if ($request->exists("foto")) {
                 $this->inputName = "foto";
                 $this->saveAvatarFrom($request);
                 $data["foto"] = $this->filePath;
             }
 
-            $paciente = Paciente::create($data);
+            $doctor = Doctor::create($data);
 
-            if ($request->exists('alergias')) {
-                $paciente->alergias()->attach($request->alergias);
+            if ($request->exists('especialidades')) {
+                $doctor->especialidades()->attach($request->especialidades);
             }
             DB::commit();
             return Helper::response(201, "Se creó el registro correctamente.");
@@ -55,44 +55,44 @@ class PacienteController extends Controller {
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Paciente  $paciente
+     * @param  \App\Models\Doctor  $doctor
      * @return \Illuminate\Http\Response
      */
-    public function show(Paciente $paciente) {
-        $paciente->edad = Carbon::parse($paciente->fecha_nacimiento)->age;
-        $paciente->alergias = $paciente->alergias;
+    public function show(Doctor $doctor) {
+        $doctor->edad           = Carbon::parse($doctor->fecha_nacimiento)->age;
+        $doctor->especialidades = $doctor->especialidades;
 
-        return response()->json($paciente, 200);
+        return response()->json($doctor, 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Paciente  $paciente
+     * @param  \App\Models\Doctor  $doctor
      * @return \Illuminate\Http\Response
      */
-    public function update(PacienteRequest $request, Paciente $paciente) {
+    public function update(DoctorRequest $request, Doctor $doctor) {
         try {
             DB::beginTransaction();
-            $data = $request->except('alergias');
+            $data = $request->except('especialidades');
             if ($request->exists("foto")) {
                 $this->inputName = "foto";
-                if ($paciente->foto != null) {
-                    $this->saveAvatarFrom($request, $paciente->foto);
+                if ($doctor->foto != null) {
+                    $this->saveAvatarFrom($request, $doctor->foto);
                 } else {
                     $this->saveAvatarFrom($request);
                 }
                 $data["foto"] = $this->filePath;
             }
 
-            $paciente->update($data);
+            $doctor->update($data);
 
-            if ($request->exists('alergias')) {
-                if (count(array_diff($request->alergias, $this->getPivot($paciente->id))) > 0) {
-                    $alergias = $this->getPivot($paciente->id);
-                    $paciente->alergias()->detach($alergias);
-                    $paciente->alergias()->toggle($request->alergias);
+            if ($request->exists('especialidades')) {
+                if (count(array_diff($request->especialidades, $this->getPivot($doctor->id))) > 0) {
+                    $especialidades = $this->getPivot($doctor->id);
+                    $doctor->especialidades()->detach($especialidades);
+                    $doctor->especialidades()->toggle($request->especialidades);
                 }
             }
             DB::commit();
@@ -106,29 +106,29 @@ class PacienteController extends Controller {
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Paciente  $paciente
+     * @param  \App\Models\Doctor  $doctor
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Paciente $paciente) {
+    public function destroy(Doctor $doctor) {
         try {
-            $paciente->delete();
+            $doctor->delete();
             return Helper::response(201, "Se eliminó el registro correctamente.");
         } catch (\Exception $e) {
             return Helper::response(500, "Ocurrió un error en el servidor, póngase en contacto con el departamento de soporte.");
         }
     }
 
-    private function getPivot($paciente_id) {
+    private function getPivot($doctor_id) {
         $data = [];
 
-        $alergias = DB::table('alergias_pacientes')
-            ->select('alergia_id')
-            ->where('paciente_id', '=', $paciente_id)
+        $alergias = DB::table('doctores_especialidades')
+            ->select('especialidad_id')
+            ->where('doctor_id', '=', $doctor_id)
             ->get();
 
         if ($alergias->count()) {
             foreach ($alergias as $item) {
-                array_push($data, $item->alergia_id);
+                array_push($data, $item->especialidad_id);
             }
         }
 

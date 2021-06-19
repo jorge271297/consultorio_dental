@@ -19,7 +19,8 @@ class CreateDoctoresTable extends Migration
             $table->string('nombres', 120);
             $table->string('apellido_paterno', 120);
             $table->string('apellido_materno', 120)->nullable();
-
+            $table->date('fecha_nacimiento', 12);
+            
             $table->string('cedula_profesional', 16);
             $table->string('numero_salubridad', 16);
 
@@ -29,9 +30,10 @@ class CreateDoctoresTable extends Migration
             $table->string('domicilio', 255);
             $table->integer('codigo_postal');
 
-            $table->string('telefono_fijo', 120)->nullable();
-            $table->string('telefono_movil', 120)->nullable();
+            $table->string('telefono_fijo', 18)->nullable();
+            $table->string('telefono_movil', 18)->nullable();
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }
