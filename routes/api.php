@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PacienteController;
 
 /*
@@ -25,5 +26,11 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('paciente/{paciente}', [PacienteController::class, 'show']);
     Route::put('paciente/{paciente}', [PacienteController::class, 'update']);
     Route::delete('paciente/{paciente}', [PacienteController::class, 'destroy']);
+
+    Route::get('doctores', [DoctorController::class, 'index']);
+    Route::post('doctor', [DoctorController::class, 'store']);
+    Route::get('doctor/{doctor}', [DoctorController::class, 'show']);
+    Route::put('doctor/{doctor}', [DoctorController::class, 'update']);
+    Route::delete('doctor/{doctor}', [DoctorController::class, 'destroy']);
 });
 
