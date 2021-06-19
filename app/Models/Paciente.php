@@ -32,8 +32,15 @@ class Paciente extends Model {
         'telefono_movil',
     ];
 
+    public function fullName() : string {
+        return $this->nombres . " " . $this->apellido_paterno . " " . $this->apellido_materno;
+    }
+
     public function alergias(){
         return $this->belongsToMany(Alergia::class, 'alergias_pacientes', 'paciente_id', 'alergia_id')->withTimestamps();
     }
 
+    public function citas() {
+        return $this->hasMany(Cita::class, 'paciente_id', 'id');
+    }
 }
