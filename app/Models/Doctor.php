@@ -4,11 +4,10 @@ namespace App\Models;
 
 use App\Models\Especialidad;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Doctor extends Model
-{
+class Doctor extends Model {
     use HasFactory;
     use SoftDeletes;
 
