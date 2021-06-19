@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CitaController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PacienteController;
 
@@ -32,5 +33,11 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('doctor/{doctor}', [DoctorController::class, 'show']);
     Route::put('doctor/{doctor}', [DoctorController::class, 'update']);
     Route::delete('doctor/{doctor}', [DoctorController::class, 'destroy']);
+
+    Route::get('citas', [CitaController::class, 'index']);
+    Route::post('cita', [CitaController::class, 'store']);
+    Route::get('cita/{cita}', [CitaController::class, 'show']);
+    Route::put('cita/{cita}', [CitaController::class, 'update']);
+    Route::delete('cita/{cita}', [CitaController::class, 'destroy']);
 });
 

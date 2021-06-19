@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Cita;
 use App\Models\Especialidad;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,7 +31,15 @@ class Doctor extends Model {
         'telefono_movil',
     ];
 
+    public function fullName() : string {
+        return $this->nombres . " " . $this->apellido_paterno . " " . $this->apellido_materno;
+    }
+
     public function especialidades() {
         return $this->belongsToMany(Especialidad::class, 'doctores_especialidades', 'doctor_id', 'especialidad_id')->withTimestamps();
+    }
+
+    public function citas() {
+        return $this->hasMany(Cita::class, 'doctor_id', 'id');
     }
 }

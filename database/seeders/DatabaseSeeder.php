@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             AlergiaSeeder::class,
             EspecialidadSeeder::class,
             AlergiaPacienteSeeder::class,
-            DoctorEspecialidadSeeder::class
+            DoctorEspecialidadSeeder::class,
+            CitaSeeder::class
         ]);
     }
 }

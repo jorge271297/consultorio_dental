@@ -23,7 +23,10 @@ class CreateCitasTable extends Migration
 
             $table->date('fecha');
             $table->string('hora', 8);
+            $table->string('nota', 800)->nullable();
             $table->string('status', 1);
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }
