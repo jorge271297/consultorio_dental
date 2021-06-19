@@ -34,12 +34,12 @@ class PacienteRequest extends FormRequest {
             'altura'           => ['required', 'numeric'],
             'estado'           => ['required', 'string', 'min:4', 'max:120'],
             'municipio'        => ['required', 'string', 'min:4', 'max:120'],
-            'colonia'          => ['required', 'string', 'min:4', 'max:120'],
+            'colonia'          => ['required', 'string', 'min:4', 'max:255'],
             'domicilio'        => ['required', 'string', 'min:4', 'max:255'],
             'codigo_postal'    => ['required', 'numeric'],
             'email'            => ['nullable', 'email', 'max:120'],
-            'telefono_fijo'    => ['nullable', new NumberPhone(), '', 'max:16'],
-            'telefono_movil'   => ['nullable', new NumberPhone(), 'max:16']
+            'telefono_fijo'    => ['nullable', new NumberPhone(), 'max:18'],
+            'telefono_movil'   => ['nullable', new NumberPhone(), 'max:18']
         ];
     }
 

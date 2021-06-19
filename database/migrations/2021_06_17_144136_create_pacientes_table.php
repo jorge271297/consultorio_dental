@@ -32,8 +32,8 @@ class CreatePacientesTable extends Migration
             $table->integer('codigo_postal');
 
             $table->string('email', 120)->nullable();
-            $table->string('telefono_fijo', 16)->nullable();
-            $table->string('telefono_movil', 16)->nullable();
+            $table->string('telefono_fijo', 18)->nullable();
+            $table->string('telefono_movil', 18)->nullable();
 
             $table->softDeletes();
             $table->timestamps();
